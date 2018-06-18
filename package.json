@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-  	"test": "mocha test",
-  	"your-custom-script": "echo npm"
+    "test": "mocha test",
+    "your-custom-script": "echo npm"
   },
   "repository": {
     "type": "git",
@@ -20,5 +20,9 @@
   "homepage": "https://github.com/fjodor-rybakov/library_omega#readme",
   "devDependencies": {
     "mocha": "^5.2.0"
+  },
+  "dependencies": {
+    "restify": "git://github.com/mcavage/node-restify.git",
+    "restify-version": "0.0.3"
   }
 }

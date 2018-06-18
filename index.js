@@ -1,15 +1,12 @@
 // index.js
-require('./app/index')
-const http = require('http')
-const port = 3000
-const requestHandler = (request, response) => {
-    console.log(request.url)
-    response.end('Hello Node.js Server!')
-}
-const server = http.createServer(requestHandler)
-server.listen(port, (err) => {
-    if (err) {
-        return console.log('something bad happened', err)
-    }
-    console.log(`server is listening on ${port}`)
-})
+var restify = require('restify');
+var server = restify.createServer();
+
+server.listen(3000, function() {
+    console.log('Listening on port 3000');
+});
+
+server.get('/', function (req, res, next) {
+   res.send("Hello!");
+   next();
+});
