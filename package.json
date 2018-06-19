@@ -1,12 +1,11 @@
 {
   "name": "library_omega",
   "version": "1.0.0",
-  "description": "",
+  "description": "library",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "test": "mocha test",
-    "your-custom-script": "echo npm"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
@@ -18,11 +17,9 @@
     "url": "https://github.com/fjodor-rybakov/library_omega/issues"
   },
   "homepage": "https://github.com/fjodor-rybakov/library_omega#readme",
-  "devDependencies": {
-    "mocha": "^5.2.0"
-  },
   "dependencies": {
-    "restify": "git://github.com/mcavage/node-restify.git",
-    "restify-version": "0.0.3"
+    "lodash": "^4.17.10",
+    "mongodb": "^3.0.10",
+    "restify": "^7.2.1"
   }
 }

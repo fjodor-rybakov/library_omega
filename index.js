@@ -1,12 +1,26 @@
 // index.js
-var restify = require('restify');
-var server = restify.createServer();
+const restify = require('restify');
+const mongoClient = require("mongodb").MongoClient;
+const server = restify.createServer();
+const serverPort = 3000;
+const dbPort = 27017;
+var db; // Ссылка на базу
 
-server.listen(3000, function() {
-    console.log('Listening on port 3000');
-});
+server.use(restify.plugins.acceptParser(server.acceptable));
+server.use(restify.plugins.queryParser());
+server.use(restify.plugins.bodyParser());
 
-server.get('/', function (req, res, next) {
-   res.send("Hello!");
-   next();
+require('./app/routes')(server, {}); // Модуль маршрутов
+
+mongoClient.connect(`mongodb://localhost:${dbPort}/lib`, function(err, database) { // Подключаемся к базе TODO..
+    if(err) {
+        return console.log(err);
+    }
+
+    db = database; // Сохраняем ссылку на базу
+    server.listen(serverPort, (err) => { // Подключаемся к серверу 
+		console.log('Listening on port ' + serverPort);
+	});
+
+    database.close();
 });
