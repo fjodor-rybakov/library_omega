@@ -1,15 +1,24 @@
 // index.js
+const mongoClient = require("mongodb").MongoClient;
 const restify = require('restify');
-const db = require('./database');
 const server = restify.createServer();
 const serverPort = 3000;
-
-server.listen(serverPort, (err) => { // Подключаемся к серверу
-    console.log('Listening on port ' + serverPort);
-});
+const dbPort = 27017;
 
 server.use(restify.plugins.acceptParser(server.acceptable));
 server.use(restify.plugins.queryParser());
 server.use(restify.plugins.bodyParser());
 
-require('./app/routes')(server, {}); // Модуль маршрутов
+mongoClient.connect(`mongodb://localhost:${dbPort}/lib`, function(err, database) { // Подключаемся к базе TODO..
+    if(err) {
+        return console.log(err);
+    }
+
+    server.listen(serverPort, (err) => { // Подключаемся к серверу
+    	require('./app/routes')(server, database); // Модуль маршрутов
+	    console.log('Listening on port ' + serverPort);
+	});
+
+    console.log("success connect to database");
+    database.close();
+});
