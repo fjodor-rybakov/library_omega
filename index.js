@@ -9,7 +9,7 @@ server.use(restify.plugins.acceptParser(server.acceptable));
 server.use(restify.plugins.queryParser());
 server.use(restify.plugins.bodyParser());
 
-mongoClient.connect(`mongodb://localhost:${dbPort}/lib`, function(err, database) { // Подключаемся к базе TODO..
+mongoClient.connect(`mongodb://localhost:${dbPort}/`, function(err, database) { // Подключаемся к базе TODO..
     if(err) {
         return console.log(err);
     }
@@ -20,5 +20,5 @@ mongoClient.connect(`mongodb://localhost:${dbPort}/lib`, function(err, database)
 	});
 
     console.log("success connect to database");
-    database.close();
+    //database.close();
 });
