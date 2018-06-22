@@ -10,15 +10,19 @@ server.use(restify.plugins.queryParser());
 server.use(restify.plugins.bodyParser());
 
 mongoClient.connect(`mongodb://localhost:${dbPort}`, function(err, database) { // Подключаемся к базе TODO..
-    if(err) {
-        return console.log(err);
-    }
+	try {
+		if (err) throw err;
 
-    server.listen(serverPort, (err) => { // Подключаемся к серверу
-    	require('./app/routes')(server, database); // Модуль маршрутов
-	    console.log('Listening on port ' + serverPort);
-	});
+		server.listen(serverPort, (err) => { // Подключаемся к серверу
+			if (err) throw err;
+			require('./app/routes')(server, database); // Модуль маршрутов
+			console.log('Listening on port ' + serverPort);
+		});
 
-    console.log("success connect to database");
+    	console.log("success connect to database");
+	} catch(e) {
+		console.log(e);
+		res.send(e.message);
+	}
     //database.close();
 });
