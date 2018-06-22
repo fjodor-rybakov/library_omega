@@ -18,13 +18,14 @@ module.exports = function (app, db) { // тест методов post/get
             if (err) {
                 res.send(err);
             }
+
             console.log(result.ops);
         });
 
         res.send("Book successfully added");
     });
 
-    app.get('/books/:id', (req, res) => { // получить информауию о книге по id
+    app.get('/books/:id', (req, res) => { // получить информацию о книге по id
         collectionBook.findOne({"_id": ObjectID(req.params.id)}, function (err, info) {
             if (err) {
                 console.log(err);
@@ -66,7 +67,7 @@ module.exports = function (app, db) { // тест методов post/get
     });
 
 
-    app.post('/showPage/:numPage', (req, res) => {
+    app.get('/showPage/:numPage', (req, res) => { // пейджинг
     	let numPage = +req.params.numPage;
     	let countPage = 20;
 
@@ -79,5 +80,19 @@ module.exports = function (app, db) { // тест методов post/get
 	    });
     });
 
+    app.get('/searchBook/:substring', (req, res) => { // поиск по подстроке
+    	let substring = req.params.substring;
+    	let query = { 
+    		"name": {$regex: substring} 
+    	};
+
+    	collectionBook.find(query).toArray(function(err, result) {
+    		if (err) {
+                res.send(err);
+            }
+
+	        res.send(result);
+	    });
+    });
 };
 
