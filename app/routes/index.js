@@ -1,41 +1,41 @@
 const ObjectID = require('mongodb').ObjectID;
 module.exports = function (app, db) { // тест методов post/get
     const dbName = db.db("library");
+    const collectionBooking = dbName.collection("booking");
+    const collectionBook = dbName.collection("book");
 
-    app.post('/addBook', (req, res) => {
-        const collection = dbName.collection("book");
-
+    app.post('/addBook', (req, res) => { // добавление книги
         let book = {
             name: req.body.name,
             link: req.body.link,
-            authors: [{name: req.body.author_name, surname: req.body.author_surname}],
+            authors: req.body.author_name,
             available: true,
             description: req.body.description,
-            year: req.body.year
+            year: +req.body.year
         };
 
-        collection.insertOne(book, function (err, result) {
+        collectionBook.insertOne(book, function (err, result) {
             if (err) {
                 res.send(err);
             }
             console.log(result.ops);
         });
 
-        res.send(req.method);
+        res.send("Book successfully added");
     });
 
-    app.get('/books/:id', (req, res) => { //получить информауию о книге по id
-        dbName.collection("book").findOne({"_id": ObjectID(req.params.id)}, function (err, info) {
+    app.get('/books/:id', (req, res) => { // получить информауию о книге по id
+        collectionBook.findOne({"_id": ObjectID(req.params.id)}, function (err, info) {
             if (err) {
                 console.log(err);
-                res.send(err)
+                res.send(err);
             }
+
             res.send(info);
         });
     });
 
-    app.post('/books/:id', (req, res) => { //забронировать книгу на 10 дней
-
+    app.post('/books/:id', (req, res) => { // забронировать книгу на 10 дней
         const ms = 86400000;
         const book_id = ObjectID(req.params.id);
         let date = new Date();
@@ -47,7 +47,7 @@ module.exports = function (app, db) { // тест методов post/get
             returned: new Date(date.getTime() + ms * 10)
         };
 
-        dbName.collection("booking").insertOne(booking, function (err) {
+        collectionBooking.insertOne(booking, function (err) {
             if (err) {
                 res.send(err);
             }
@@ -56,17 +56,27 @@ module.exports = function (app, db) { // тест методов post/get
         let query = {_id: book_id};
         let values = {$set: {available: false}};
 
-        dbName.collection("book").updateOne(query, values, function (err) {
+        collectionBook.updateOne(query, values, function (err) {
             if (err) {
                 res.send(err);
             }
         });
 
-        res.send(req.method);
+        res.send("Book successfully booked");
     });
 
-    app.get('/', (req, res) => {
-        res.send(req.method);
+
+    app.post('/showPage/:numPage', (req, res) => {
+    	let numPage = +req.params.numPage;
+    	let countPage = 20;
+
+    	collectionBook.find().limit(countPage * numPage).toArray(function(err, results) {
+    		if (err) {
+                res.send(err);
+            }
+
+	        res.send(results);
+	    });
     });
 
 };
