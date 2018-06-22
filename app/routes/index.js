@@ -1,5 +1,5 @@
 const ObjectID = require('mongodb').ObjectID;
-module.exports = function (app, db) { // тест методов post/get
+module.exports = function (app, db) { // методы post/get
     const dbName = db.db("library");
     const collectionBooking = dbName.collection("booking");
     const collectionBook = dbName.collection("book");
@@ -86,6 +86,7 @@ module.exports = function (app, db) { // тест методов post/get
     	try {
     		let numPage = +req.params.numPage;
     		let countPage = 20;
+    		if (!isNumeric(numPage) || !isInteger(numPage)) throw new Error("number page mast be numeric and integer");
     		if (numPage < 1) throw new Error("argument less 1");
 
     		collectionBook.find().limit(countPage * numPage).toArray(function(err, results) {
