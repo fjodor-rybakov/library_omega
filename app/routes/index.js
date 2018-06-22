@@ -80,11 +80,25 @@ module.exports = function (app, db) { // тест методов post/get
 	    });
     });
 
-    app.get('/searchBook/:substring', (req, res) => { // поиск по подстроке
+    app.get('/searchBook/:substring', (req, res) => { // поиск по подстроке (фильтрация по названию)
     	let substring = req.params.substring;
     	let query = { 
     		"name": {$regex: substring} 
     	};
+
+    	collectionBook.find(query).toArray(function(err, result) {
+    		if (err) {
+                res.send(err);
+            }
+
+	        res.send(result);
+	    });
+    });
+
+    app.get('/book', (req, res) => { // фильтрация по статусу
+    	let available = req.query.available;
+    	let isAvailable = (available == 'true'); // прости, но ты пишешь на javascript 
+    	let query = (available ? {"available": isAvailable} : {});
 
     	collectionBook.find(query).toArray(function(err, result) {
     		if (err) {
