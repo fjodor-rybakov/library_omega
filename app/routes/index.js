@@ -2,7 +2,7 @@ var errs = require('restify-errors');
 const ObjectID = require('mongodb').ObjectID;
 
 module.exports = function (app, db) { // методы post/get
-    const dbName = db.db("library");
+    const dbName = db.db("library-omega");
     const collectionBooking = dbName.collection("booking");
     const collectionBook = dbName.collection("book");
 
