@@ -21,3 +21,5 @@ mongoClient.connect(`mongodb://admin:password1@ds263660.mlab.com:63660/library-o
 	console.log("success connect to database");
 	//database.close();
 });
+
+module.exports = server;

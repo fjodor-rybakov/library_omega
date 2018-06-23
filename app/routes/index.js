@@ -32,25 +32,25 @@ module.exports = function (app, db) { // методы post/get
 	}
 
     app.post('/addBook', (req, res, next) => { // добавление книги
-		if (!isset(req.body.name, req.body.link, req.body.author_name, req.body.description, req.body.year)) 
+		if (!isset(req.body.name, req.body.link, req.body.authors, req.body.description, req.body.year))
 			return next(new errs.InvalidArgumentError("Not enough body data: mast be (name, link, author_namem description, year)"));
 
 		let year_book = +req.body.year;
 
-		if (!isNumeric(year_book) || !isInteger(year_book)) 
+		if (!isNumeric(year_book) || !isInteger(year_book))
 			return next(new errs.InvalidArgumentError("Year mast be numeric and integer"));
 
 		let book = {
             name: req.body.name,
             link: req.body.link,
-            authors: req.body.author_name,
+            authors: req.body.authors,
             available: true,
             description: req.body.description,
             year: year_book
         };
 
         collectionBook.insertOne(book, function (err, result) {
-            if (err) 
+            if (err)
             	return next(new errs.BadGatewayError(err.message));
             console.log(result.ops);
         });
@@ -138,12 +138,12 @@ module.exports = function (app, db) { // методы post/get
 	    });
     });
 
-    app.get('/book', (req, res, next) => { // фильтрация по статусу
+    app.get('/books', (req, res, next) => { // фильтрация по статусу
 		if (!isset(req.query.available)) 
 			return next(new errs.InvalidArgumentError("Not enough query parameters: mast be (available)"));
 
 		let available = req.query.available;
-    	let isAvailable = (available == 'true'); // прости, но ты пишешь на javascript 
+    	let isAvailable = (available === 'true'); // прости, но ты пишешь на javascript
     	let query = (available ? {"available": isAvailable} : {});
 
     	collectionBook.find(query).toArray(function(err, result) {
