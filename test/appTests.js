@@ -105,9 +105,10 @@ describe('filter status books', function() {
 
 
 describe('booking', function () {
+    var url = 'http://localhost:' + 3000;
+
     it('getInfoInJSON', function (done) {
         app.listen(function() {
-            var url = 'http://localhost:' + 3000;
             supertest(url)
                 .post('/books/5b2e8855a227d821587fb894')
                 .send({name: 'john'})
@@ -122,18 +123,18 @@ describe('booking', function () {
 
     it('checkBooking', function (done) {
         app.listen(function() {
-            var url = 'http://localhost:' + 3000;
             supertest(url)
                 .get('/books/5b2e8855a227d821587fb894')
                 .expect('Content-Type', /json/)
                 .expect(200, function (err,res) {
                     var data = JSON.parse(res.text);
-                    console.log(data.avilable);
+                    //console.log(data.available);
                     console.log(err);
                     console.log(JSON.stringify(res));
                     if (err) throw err;
+                    assert.strictEqual(data.available, false);
                     done();
-                });
-        });
+                })
+        })
     })
 });
