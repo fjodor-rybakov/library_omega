@@ -50,7 +50,7 @@ describe('bookInfo', function () {
 	})
 });*/
 
-describe('paging books', function () {
+/*describe('paging books', function () {
 	it('paging', function (done) {
 		app.listen(function() {
 			var url = 'http://localhost:' + 3000;
@@ -101,4 +101,39 @@ describe('filter status books', function() {
 			});
 		});
 	});
+});*/
+
+
+describe('booking', function () {
+    it('getInfoInJSON', function (done) {
+        app.listen(function() {
+            var url = 'http://localhost:' + 3000;
+            supertest(url)
+                .post('/books/5b2e8855a227d821587fb894')
+                .send({name: 'john'})
+                .expect(200, function (err,res) {
+                    console.log(err);
+                    console.log(JSON.stringify(res));
+                    if (err) throw err;
+                    done();
+                });
+        });
+    });
+
+    it('checkBooking', function (done) {
+        app.listen(function() {
+            var url = 'http://localhost:' + 3000;
+            supertest(url)
+                .get('/books/5b2e8855a227d821587fb894')
+                .expect('Content-Type', /json/)
+                .expect(200, function (err,res) {
+                    var data = JSON.parse(res.text);
+                    console.log(data.avilable);
+                    console.log(err);
+                    console.log(JSON.stringify(res));
+                    if (err) throw err;
+                    done();
+                });
+        });
+    })
 });
