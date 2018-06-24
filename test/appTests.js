@@ -7,13 +7,14 @@ var s;
 s = app.listen(function() {
 		var url = 'http://localhost:' + s.address().port;
 		console.log(url);
-		});
+	});
 */
 
 describe('addBook', function() {
 	it('mustAdd', function(done) {
-		var url = 'http://localhost:' + 3000;
-		supertest(url)
+		app.listen(function() {
+			var url = 'http://localhost:' + 3000;
+			supertest(url)
 			.post('/addBook')
 			.send({name: 'john',
 				link: 'link',
@@ -28,15 +29,15 @@ describe('addBook', function() {
 				if (err) throw err;
 				done();
 			});
+		});
 	});
-
-
 });
 
 describe('bookInfo', function () {
 	it('getInfoInJSON', function (done) {
-		var url = 'http://localhost:' + 3000;
-		supertest(url)
+		app.listen(function() {
+			var url = 'http://localhost:' + 3000;
+			supertest(url)
 			.get('/books/5b2e32f9fb6fc048e105b472')
 			.expect('Content-Type', /json/)
 			.expect(200, function (err,res) {
@@ -45,5 +46,6 @@ describe('bookInfo', function () {
 				if (err) throw err;
 				done();
 			});
+		});
 	})
 });
