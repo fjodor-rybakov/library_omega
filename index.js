@@ -9,7 +9,9 @@ server.use(restify.plugins.acceptParser(server.acceptable));
 server.use(restify.plugins.queryParser());
 server.use(restify.plugins.bodyParser());
 
-mongoClient.connect(`mongodb://admin:password1@ds263660.mlab.com:63660/library-omega`, function(err, database) { // Подключаемся к базе TODO..
+let mongoURL = `mongodb://admin:password1@ds263660.mlab.com:63660/library-omega`;
+
+mongoClient.connect(mongoURL, function(err, database) { // Подключаемся к базе TODO..
 	if (err) return console.log(err);
 
 	server.listen(serverPort, (err) => { // Подключаемся к серверу

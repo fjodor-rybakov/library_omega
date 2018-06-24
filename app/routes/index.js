@@ -33,7 +33,7 @@ module.exports = function (app, db) { // методы post/get
 
     app.post('/addBook', (req, res, next) => { // добавление книги
 		if (!isset(req.body.name, req.body.link, req.body.authors, req.body.description, req.body.year))
-			return next(new errs.InvalidArgumentError("Not enough body data: mast be (name, link, author_namem description, year)"));
+			return next(new errs.InvalidArgumentError("Not enough body data: mast be (name, link, authors, description, year)"));
 
 		let year_book = +req.body.year;
 
