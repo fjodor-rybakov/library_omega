@@ -122,11 +122,11 @@ module.exports = function (app, db) { // методы post/get
 		});
 	});
 
-	app.get('/books/searchBook/:substring', (req, res, next) => { // поиск по подстроке (фильтрация по названию)
-		if (!isset(req.params.substring)) 
-			return next(new errs.InvalidArgumentError("Not enough parameters: mast be (substring)"));
+	app.get('/books/searchBook', (req, res, next) => { // поиск по подстроке (фильтрация по названию)
+		if (!isset(req.query.substring)) 
+			return next(new errs.InvalidArgumentError("Not enough query parameters: mast be (substring)"));
 
-		let substring = req.params.substring;
+		let substring = req.query.substring;
 		let query = { 
 			"name": {$regex: substring} 
 		};

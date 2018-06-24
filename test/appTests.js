@@ -10,7 +10,7 @@ s = app.listen(function() {
 	});
 */
 
-describe('addBook', function() {
+/*describe('addBook', function() {
 	it('mustAdd', function(done) {
 		app.listen(function() {
 			var url = 'http://localhost:' + 3000;
@@ -48,4 +48,57 @@ describe('bookInfo', function () {
 			});
 		});
 	})
+});*/
+
+describe('paging books', function () {
+	it('paging', function (done) {
+		app.listen(function() {
+			var url = 'http://localhost:' + 3000;
+			supertest(url)
+			.get('/books/showPage/1')
+			.expect('Content-Type', /json/)
+			.expect(200, function (err,res) {
+				console.log(err);
+				console.log(JSON.stringify(res));
+				if (err) throw err;
+				done();
+			});
+		});
+	})
+});
+
+describe('search substring books', function() {
+	it('search substring', function(done) {
+		app.listen(function() {
+			var url = 'http://localhost:' + 3000;
+			supertest(url)
+			.get('/books/searchBook')
+			.query({ substring: 'new' })
+			.expect('Content-Type', /json/)
+			.expect(200, function (err,res) {
+				console.log(err);
+				console.log(JSON.stringify(res));
+				if (err) throw err;
+				done();
+			});
+		});
+	});
+});
+
+describe('filter status books', function() {
+	it('filter status', function(done) {
+		app.listen(function() {
+			var url = 'http://localhost:' + 3000;
+			supertest(url)
+			.get('/books')
+			.query({ available: true })
+			.expect('Content-Type', /json/)
+			.expect(200, function (err,res) {
+				console.log(err);
+				console.log(JSON.stringify(res));
+				if (err) throw err;
+				done();
+			});
+		});
+	});
 });
