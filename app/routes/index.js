@@ -31,7 +31,7 @@ module.exports = function (app, db) { // методы post/get
 		return true;
 	}
 
-	app.post('/addBook', (req, res, next) => { // добавление книги
+	app.post('/books', (req, res, next) => { // добавление книги
 		if (!isset(req.body.name, req.body.link, req.body.authors, req.body.description, req.body.year))
 			return next(new errs.InvalidArgumentError("Not enough body data: mast be (name, link, authors, description, year)"));
 
@@ -69,14 +69,14 @@ module.exports = function (app, db) { // методы post/get
 		});
 	});
 
-	app.post('/books/:id', (req, res, next) => { // забронировать книгу на 10 дней
-		if (!isset(req.params.id)) 
-			return next(new errs.InvalidArgumentError("Not enough parameters: mast be (id)"));
+	app.post('/booking', (req, res, next) => { // забронировать книгу на 10 дней
+		if (!isset(req.body.id))
+			return next(new errs.InvalidArgumentError("Not enough body data: mast be (id)"));
 		if (!isset(req.body.name)) 
 			return next(new errs.InvalidArgumentError("Not enough body data: mast be (name)"));
 
 		const ms = 86400000;
-		const book_id = ObjectID(req.params.id);
+		const book_id = ObjectID(req.body.id);
 		let date = new Date();
 
 		let booking = {
