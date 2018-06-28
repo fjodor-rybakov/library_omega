@@ -110,8 +110,12 @@ describe('booking', function () {
     it('getInfoInJSON', function (done) {
         app.listen(function() {
             supertest(url)
-                .post('/books/5b2e8855a227d821587fb894')
-                .send({name: 'john'})
+                .post('/booking')
+                .send({
+                    name: 'john',
+                    id: '5b2f3bdcadc34b1358256817',
+                    available: 'true'
+                })
                 .expect(200, function (err,res) {
                     console.log(err);
                     console.log(JSON.stringify(res));
@@ -124,7 +128,7 @@ describe('booking', function () {
     it('checkBooking', function (done) {
         app.listen(function() {
             supertest(url)
-                .get('/books/5b2e8855a227d821587fb894')
+                .get('/books/5b2f3bdcadc34b1358256817')
                 .expect('Content-Type', /json/)
                 .expect(200, function (err,res) {
                     var data = JSON.parse(res.text);

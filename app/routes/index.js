@@ -59,13 +59,20 @@ module.exports = function (app, db) { // методы post/get
     });
 
     app.get('/books/:id', (req, res, next) => { // получить информацию о книге по id
+       // const book_id = req.params.id;
         if (!isset(req.params.id))
             return next(new errs.InvalidArgumentError("Not enough parameters: mast be (id)"));
 
-        collectionBook.findOne({"_id": ObjectID(req.params.id)}, function (err, info) {
+        collectionBook.find({"_id": ObjectID(req.params.id)}).toArray( function (err, info) {
             if (err)
                 return next(new errs.BadGatewayError(err.message));
-            res.send(info);
+            let query = {book_id: ObjectID(req.params.id)};
+
+            collectionBooking.find(query).sort({taken: -1}).toArray(function (err, result) {
+                if (err || result.length === 0)
+                    return next(new errs.BadGatewayError(err.message));
+                res.send(info.concat(result[0]));
+            });
         });
     });
 
