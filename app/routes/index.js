@@ -1,16 +1,7 @@
 var errs = require('restify-errors');
 const ObjectID = require('mongodb').ObjectID;
 
-let message = 
-`This library app
-accept requests:
-	/books - добавление книги (post, необходимые параметры в body: name, link, authors, description, year) 
-	/books/:id - получить информацию о книге по id (get)
-	/booking - забронировать книгу или снять бронь (post, необходимые параметры в body: id, name, available)
-	/books/showPage/:numPage - пейджинг (get)
-	/books/searchBook - поиск по подстроке (фильтрация по названию) (get, query запрос необходимые параметры: substring)
-	/books - фильтрация по статусу (get, query запрос необходимые параметры: available)
-`;
+let message = 'This library app. accept requests: /books - добавление книги (post, необходимые параметры в body: name, link, authors, description, year); /books/:id - получить информацию о книге по id (get) /booking - забронировать книгу или снять бронь (post, необходимые параметры в body: id, name, available); /books/showPage/:numPage - пейджинг (get); /books/searchBook - поиск по подстроке (фильтрация по названию) (get, query запрос необходимые параметры: substring); /books - фильтрация по статусу (get, query запрос необходимые параметры: available);';
 
 module.exports = function (app, db) { // методы post/get
 	const dbName = db.db("library-omega");
@@ -43,7 +34,6 @@ module.exports = function (app, db) { // методы post/get
 	}
 
 	app.get('/', (req, res, next) => {
-		console.log(message);
 		res.send(message);
 	});
 
