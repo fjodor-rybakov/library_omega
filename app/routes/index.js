@@ -75,6 +75,8 @@ module.exports = function (app, db) { // методы post/get
             collectionBook.find({"_id": idBook}).toArray(function (err, info) {
                 if (err)
                     return next(new errs.BadGatewayError(err.message));
+                if(info.length === 0)
+                    return next(new errs.InvalidArgumentError("Not found"));
 
                 let query = {book_id: ObjectID(idBook)};
 
@@ -82,12 +84,9 @@ module.exports = function (app, db) { // методы post/get
                     if (err)
                         return next(new errs.BadGatewayError(err.message));
 
-                    if(result.length === 0 || result.length === 0)
-                        return next(new errs.InvalidArgumentError("Not found"));
-
 					let bookInfo = {};
                     bookInfo['book'] = info[0];
-                    bookInfo['lastBooking'] = result[0];
+                    bookInfo['lastBooking'] = result.length === 0 ? {} : result[0];
 
                     res.send(bookInfo);
                 });
