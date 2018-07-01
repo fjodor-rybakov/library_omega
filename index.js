@@ -11,7 +11,7 @@ server.use(restify.plugins.bodyParser());
 
 let mongoURL = `mongodb://admin:password1@ds263660.mlab.com:63660/library-omega`;
 
-mongoClient.connect(mongoURL, function(err, database) { // Подключаемся к базе TODO..
+mongoClient.connect(mongoURL, function(err, database) { // Подключаемся к базе
 	if (err) return console.log(err);
 
 	server.listen(process.env.PORT || serverPort, (err) => { // Подключаемся к серверу

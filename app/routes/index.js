@@ -71,95 +71,117 @@ module.exports = function (app, db) { // методы post/get
 
 		try {
 			const idBook = ObjectID(req.params.id);
+
+            collectionBook.find({"_id": idBook}).toArray(function (err, info) {
+                if (err)
+                    return next(new errs.BadGatewayError(err.message));
+
+                let query = {book_id: ObjectID(idBook)};
+
+                collectionBooking.find(query).sort({taken: -1}).toArray(function (err, result) {
+                    if (err)
+                        return next(new errs.BadGatewayError(err.message));
+
+                    if(result.length === 0 || result.length === 0)
+                        return next(new errs.InvalidArgumentError("Not found"));
+
+					let bookInfo = {};
+                    bookInfo['book'] = info[0];
+                    bookInfo['lastBooking'] = result[0];
+
+                    res.send(bookInfo);
+                });
+            });
 		} catch(err) {
 			return next(new errs.InvalidArgumentError(err.message));
 		}
-
-
-		collectionBook.find({"_id": idBook}).toArray( function (err, info) {
-			if (err)
-				return next(new errs.BadGatewayError(err.message));
-			let query = {book_id: ObjectID(req.params.id)};
-
-			collectionBooking.find(query).sort({taken: -1}).toArray(function (err, result) {
-				if (err || result.length === 0)
-					return next(new errs.BadGatewayError(err.message));
-				res.send(info.concat(result[0]));
-			});
-		});
 	});
 
-	app.post('/booking', (req, res, next) => { // забронировать книгу или снять бронь
+	app.post('/booking', (req, res, next) => { // забронировать книгу
 
 		if (!isset(req.body.id))
 			return next(new errs.InvalidArgumentError("Not enough body data: mast be (id)"));
 		if (!isset(req.body.name))
 			return next(new errs.InvalidArgumentError("Not enough body data: mast be (name)"));
-		if (!isset(req.body.available))
-			return next(new errs.InvalidArgumentError("Not enough body data: mast be (available)"));
 
 		try {
 			const book_id = ObjectID(req.body.id);
+            collectionBook.find({"_id":  book_id}).toArray(function (err, result){
+                if (result.length === 0)
+                    return next(new errs.InvalidArgumentError("not found"));
+                if (result[0]['available'] === false)
+				{
+                    return next(new errs.InvalidArgumentError("The book is already booked"));
+				}
+
+                let booking = {
+                    book_id: book_id,
+                    user: req.body.name,
+                    taken: new Date(),
+                    returned: null
+                };
+
+                collectionBooking.insertOne(booking, function (err) {
+                    if (err)
+                        return next(new errs.BadGatewayError(err.message));
+                });
+
+                let query = {_id: book_id};
+                let values = {$set: {available: false}};
+
+                collectionBook.updateOne(query, values, function (err) {
+                    if (err)
+                        return next(new errs.BadGatewayError(err.message));
+                    res.send("Book successfully booked");
+                });
+            });
 		} catch(err) {
 			return next(new errs.InvalidArgumentError(err.message));
 		}
-
-		let date = new Date();
-
-		if (req.body.available === 'true') //забронировать
-		{
-			let booking = {
-				book_id: book_id,
-				user: req.body.name,
-				taken: date,
-				returned: null
-			};
-
-			collectionBooking.insertOne(booking, function (err) {
-				if (err)
-					return next(new errs.BadGatewayError(err.message));
-			});
-
-			let query = {_id: book_id};
-			let values = {$set: {available: false}};
-
-			collectionBook.updateOne(query, values, function (err) {
-				if (err)
-					return next(new errs.BadGatewayError(err.message));
-			});
-
-			res.send("Book successfully booked");
-
-		} else { // снять бронь
-
-			let query = {$and: [{book_id: book_id}, {user: req.body.name}]};
-
-			collectionBooking.find(query).sort({taken: -1}).toArray(function (err, result) {
-				if (err || result.length === 0)
-					return next(new errs.BadGatewayError(err.message));
-
-				let query = {_id: book_id};
-				let values = {$set: {available: true}};
-
-				collectionBook.updateOne(query, values, function (err) {
-					if (err)
-						return next(new errs.BadGatewayError(err.message));
-				});
-
-				let idBooking = result[0]._id;
-
-				query = {_id: idBooking};
-				values = {$set: {returned: date}};
-
-				collectionBooking.updateOne(query, values, function (err) {
-					if (err)
-						return next(new errs.BadGatewayError(err.message));
-				});
-
-				res.send("Book was returned");
-			});
-		}
 	});
+
+    app.post('/cancelBooking', (req, res, next) => { //снять бронь
+
+        if (!isset(req.body.id))
+            return next(new errs.InvalidArgumentError("Not enough body data: mast be (id)"));
+
+        try {
+            const book_id = ObjectID(req.body.id);
+
+            let query = {book_id: book_id};
+
+            collectionBooking.find(query).sort({taken: -1}).toArray(function (err, result) {
+                if (err || result.length === 0)
+                    return next(new errs.BadGatewayError(err.message));
+
+                let info = result[0];
+                if (info['returned'] !== null)
+                    return next(new errs.InvalidArgumentError("book is not booked"));
+
+                let query = {_id: book_id};
+                let values = {$set: {available: true}};
+
+                collectionBook.updateOne(query, values, function (err) {
+                    if (err)
+                        return next(new errs.BadGatewayError(err.message));
+                });
+
+                let idBooking = result[0]._id;
+
+                query = {_id: idBooking};
+                values = {$set: {returned: new Date()}};
+
+                collectionBooking.updateOne(query, values, function (err) {
+                    if (err)
+                        return next(new errs.BadGatewayError(err.message));
+                });
+
+                res.send("Book was returned");
+            });
+        } catch(err) {
+            return next(new errs.InvalidArgumentError(err.message));
+        }
+    });
 
 
 	app.get('/books/showPage/:numPage', (req, res, next) => { // пейджинг
