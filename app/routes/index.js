@@ -16,6 +16,10 @@ module.exports = (app, db) => { // методы post/get
 		return (num ^ 0) === num;
 	}
 
+	function isEmpty(str) {
+		return (str.trim() == '');
+	}
+
 	function isset() {
 		var a = arguments, l = a.length, i = 0;
 		if (l === 0) {
@@ -234,7 +238,7 @@ module.exports = (app, db) => { // методы post/get
 			return next(new errs.InvalidArgumentError("Not enough query parameters: mast be (substring)"));
 		if (isEmpty(req.query.substring))
 			return next(new errs.InvalidArgumentError("Substring is empty"));
-		
+
 		let substring = req.query.substring;
 		let query = {
 			"name": {$regex: substring}
