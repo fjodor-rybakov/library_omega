@@ -20,6 +20,7 @@
   "dependencies": {
     "lodash": "^4.17.10",
     "mongodb": "^3.0.10",
+    "npm": "^6.1.0",
     "restify": "^7.2.1"
   },
   "devDependencies": {
