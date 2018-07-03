@@ -2,15 +2,7 @@ var supertest = require('supertest');
 var assert = require('assert');
 //var app = require('../index');
 
-//var url = 'https://libraryomega.herokuapp.com';
-var url = 'localhost:3000';
-/*
-var s;
-s = app.listen(function() {
-		var url = 'http://localhost:' + s.address().port;
-		console.log(url);
-	});
-*/
+var url = 'https://libraryomega.herokuapp.com';
 
 describe('add book', function () {
     it('mustAdd', function (done) {
@@ -36,7 +28,7 @@ describe('add book', function () {
     });
 });
 
-/*describe('get book info', function () {
+describe('get book info', function () {
 	it('getInfoInJSON', function (done) {
 			supertest(url)
 			.get('/books/5b39040051c1b60d14738c7a')
@@ -100,7 +92,7 @@ describe('filter status books', function() {
 				done();
 			});
 	});
-});*/
+});
 
 describe('booking', function () {
     it('getInfoInJSON', function (done) {
@@ -138,7 +130,7 @@ describe('booking', function () {
 
 });
 
-describe('canbooking', function () {
+describe('cancelBooking', function () {
     it('cancelBooking', function (done) {
         supertest(url)
             .post('/cancelBooking')
