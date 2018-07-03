@@ -76,35 +76,36 @@ module.exports = (app, db) => { // методы post/get
 	});
 
 	app.get('/books/:id', (req, res, next) => { // получить информацию о книге по id
-		// const book_id = req.params.id;
+
 		if (!isset(req.params.id))
 			return next(new errs.InvalidArgumentError("Not enough parameters: mast be (id)"));
 		if (!ObjectID.isValid(req.params.id))
 			return next(new errs.InvalidArgumentError("Incorrect id"));
 
-		const idBook = ObjectID(req.params.id);
+		const book_id = ObjectID(req.params.id);
 
-		let queryIdBook = {
-			'_id': idBook
-		}
+		let query = {
+			'_id': book_id
+		};
 
-		collectionBook.find(queryIdBook).toArray((err, info) => {
+		collectionBook.find(query).toArray((err, info) => {
 			if (err)
 				return next(new errs.BadGatewayError(err.message));
 			if(info.length === 0)
 				return next(new errs.InvalidArgumentError("Not found"));
 
-			let query = {
-				book_id: idBook
+			query = {
+				book_id: book_id
 			};
 
 			collectionBooking.find(query).sort({taken: -1}).toArray((err, result) => {
 				if (err)
 					return next(new errs.BadGatewayError(err.message));
 
-				let bookInfo = {};
-				bookInfo['book'] = info[0];
-				bookInfo['lastBooking'] = result.length === 0 ? {} : result[0];
+				let bookInfo = {
+                    "book": info[0],
+                    "lastBooking": result.length === 0 ? {} : result[0]
+                };
 
 				res.send(bookInfo);
 				next();
@@ -117,16 +118,16 @@ module.exports = (app, db) => { // методы post/get
 			return next(new errs.InvalidArgumentError("Not enough body data: mast be (id)"));
 		if (!isset(req.body.name))
 			return next(new errs.InvalidArgumentError("Not enough body data: mast be (name)"));
-		if (!ObjectID.isValid(req.params.id))
+		if (!ObjectID.isValid(req.body.id))
 			return next(new errs.InvalidArgumentError("Incorrect id"));
 
 		const book_id = ObjectID(req.body.id);
 
-		let queryIdBook = {
+		let query = {
 			'_id': book_id
-		}
+		};
 
-		collectionBook.find(queryIdBook).toArray((err, result) => {
+		collectionBook.find(query).toArray((err, result) => {
 			if (result.length === 0)
 				return next(new errs.InvalidArgumentError("not found"));
 			if (result[0]['available'] === false)
@@ -144,7 +145,6 @@ module.exports = (app, db) => { // методы post/get
 					return next(new errs.BadGatewayError(err.message));
 			});
 
-			let query = {_id: book_id};
 			let values = {$set: {available: false}};
 
 			collectionBook.updateOne(query, values, (err) => {
@@ -165,7 +165,7 @@ module.exports = (app, db) => { // методы post/get
 	app.post('/cancelBooking', (req, res, next) => { //снять бронь
 		if (!isset(req.body.id))
 			return next(new errs.InvalidArgumentError("Not enough body data: mast be (id)"));
-		if (!ObjectID.isValid(req.params.id))
+		if (!ObjectID.isValid(req.body.id))
 			return next(new errs.InvalidArgumentError("Incorrect id"));
 
 		const book_id = ObjectID(req.body.id);
@@ -192,9 +192,9 @@ module.exports = (app, db) => { // методы post/get
 					return next(new errs.BadGatewayError(err.message));
 			});
 
-			let idBooking = result[0]._id;
+			let booking_id = result[0]._id;
 
-			query = {_id: idBooking};
+			query = {_id: booking_id};
 			values = {$set: {returned: new Date()}};
 
 			collectionBooking.updateOne(query, values, (err) => {
