@@ -1,8 +1,7 @@
 var supertest = require('supertest');
 var assert = require('assert');
-//var app = require('../index');
 
-var url = 'https://libraryomega.herokuapp.com';
+var url = 'localhost:' + 3000;
 
 describe('add book', function () {
     it('mustAdd', function (done) {
@@ -127,7 +126,6 @@ describe('booking', function () {
                 done();
             });
     });
-
 });
 
 describe('cancelBooking', function () {

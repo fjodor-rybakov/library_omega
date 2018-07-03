@@ -30,5 +30,3 @@ mongoClient.connect(config.db.uri, (err, database) => { // Подключаем�
 	require('./app/routes')(server, database); // Модуль маршрутов
 	console.log(`Success connect to database`);
 });
-
-module.exports = server;
