@@ -66,3 +66,11 @@ query запрос; необходимые параметры: substring;
 •	Get-запрос /books - фильтрация по статусу 
 query запрос; необходимые параметры: available
 
+Необходимые команды для установки node_modules
+
+npm install —global —production windows-build-tools :пакеты vs
+npm install —global node-gyp :аддон
+npm install restify :фреймворк
+npm install mongodb —save :бд 
+npm install —save-dev mocha :тесты
+npm install —save-dev supertest :тесты
