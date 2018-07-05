@@ -27,7 +27,7 @@ module.exports = (app, db) => { // методы post/get
 		}
 
 		while (i !== l) {
-			if (typeof(a[i]) == 'undefined' || a[i] === null) {
+			if (typeof(a[i]) == 'undefined' || a[i] === null || isEmpty(a[i])) {
 				return false;
 			} else {
 				i++;
@@ -44,7 +44,8 @@ module.exports = (app, db) => { // методы post/get
 
 	app.post('/books', (req, res, next) => { // добавление книги
 		if (!isset(req.body.name, req.body.link, req.body.authors, req.body.description, req.body.year))
-			return next(new errs.InvalidArgumentError("Not enough body data: mast be (name, link, authors, description, year)"));
+			return next(new errs.InvalidArgumentError("Not enough body data: mast be (name, link, authors, description, year). All fields must are filled"));
+
 
 		let year_book = +req.body.year;
 
@@ -92,7 +93,7 @@ module.exports = (app, db) => { // методы post/get
 			if (err)
 				return next(new errs.BadGatewayError(err.message));
 			if(info.length === 0)
-				return next(new errs.InvalidArgumentError("Not found"));
+				return next(new errs.NotFoundError("Book not found"));
 
 			query = {
 				book_id: book_id
@@ -114,10 +115,8 @@ module.exports = (app, db) => { // методы post/get
 	});
 
 	app.post('/booking', (req, res, next) => { // забронировать книгу
-		if (!isset(req.body.id))
-			return next(new errs.InvalidArgumentError("Not enough body data: mast be (id)"));
-		if (!isset(req.body.name))
-			return next(new errs.InvalidArgumentError("Not enough body data: mast be (name)"));
+		if (!isset(req.body.id, req.body.name))
+			return next(new errs.InvalidArgumentError("Not enough body data: mast be (id, name). All fields must are filled"));
 		if (!ObjectID.isValid(req.body.id))
 			return next(new errs.InvalidArgumentError("Incorrect id"));
 
@@ -129,7 +128,7 @@ module.exports = (app, db) => { // методы post/get
 
 		collectionBook.find(query).toArray((err, result) => {
 			if (result.length === 0)
-				return next(new errs.InvalidArgumentError("not found"));
+				return next(new errs.NotFoundError("book not found"));
 			if (result[0]['available'] === false)
 				return next(new errs.InvalidArgumentError("The book is already booked"));
 
@@ -164,7 +163,7 @@ module.exports = (app, db) => { // методы post/get
 
 	app.post('/cancelBooking', (req, res, next) => { //снять бронь
 		if (!isset(req.body.id))
-			return next(new errs.InvalidArgumentError("Not enough body data: mast be (id)"));
+			return next(new errs.InvalidArgumentError("Not enough body data: mast be (id). All fields must are filled"));
 		if (!ObjectID.isValid(req.body.id))
 			return next(new errs.InvalidArgumentError("Incorrect id"));
 
@@ -178,11 +177,11 @@ module.exports = (app, db) => { // методы post/get
 			if (err)
 				return next(new errs.BadGatewayError(err.message));
 			if(result.length === 0)
-				return next(new errs.InvalidArgumentError("Not found"));
+				return next(new errs.NotFoundError("Book not found"));
 
 			let info = result[0];
 			if (info['returned'] !== null)
-				return next(new errs.InvalidArgumentError("book is not booked"));
+				return next(new errs.InvalidArgumentError("Book is not booked"));
 
 			let query = {_id: book_id};
 			let values = {$set: {available: true}};
@@ -235,9 +234,7 @@ module.exports = (app, db) => { // методы post/get
 
 	app.get('/books/searchBook', (req, res, next) => { // поиск по подстроке (фильтрация по названию)
 		if (!isset(req.query.substring))
-			return next(new errs.InvalidArgumentError("Not enough query parameters: mast be (substring)"));
-		if (isEmpty(req.query.substring))
-			return next(new errs.InvalidArgumentError("Substring is empty"));
+			return next(new errs.InvalidArgumentError("Not enough query parameters: mast be (substring). All fields must are filled"));
 
 		let substring = req.query.substring;
 		let query = {
@@ -254,7 +251,7 @@ module.exports = (app, db) => { // методы post/get
 
 	app.get('/books', (req, res, next) => { // фильтрация по статусу
 		if (!isset(req.query.available))
-			return next(new errs.InvalidArgumentError("Not enough query parameters: mast be (available)"));
+			return next(new errs.InvalidArgumentError("Not enough query parameters: mast be (available). All fields must are filled"));
 
 		let available = req.query.available;
 		let isAvailable = (available === 'true'); // прости, но ты пишешь на javascript
@@ -264,6 +261,33 @@ module.exports = (app, db) => { // методы post/get
 			if (err)
 				return next(new errs.BadGatewayError(err.message));
 			res.send(result);
+			next();
+		});
+	});
+
+	app.post('/book/delete', (req, res, next) => { // Удаление книги
+		if (!isset(req.body.id))
+			return next(new errs.InvalidArgumentError("Not enough body data: mast be (id). All fields must are filled"));
+		if (!ObjectID.isValid(req.body.id))
+			return next(new errs.InvalidArgumentError("Incorrect id"));
+
+		const book_id = ObjectID(req.body.id);
+		let query = {
+			_id: book_id
+		};
+
+		collectionBook.deleteOne(query, (err, result) => {
+			if (err)
+				return next(new errs.BadGatewayError(err.message));
+			if (result.result.n == 0) 
+				return next(new errs.NotFoundError("Book not found"));
+
+			let resBody = {
+				code: 'Status ok',
+				message: 'One book deleted'
+			};
+
+			res.send(resBody);
 			next();
 		});
 	});
