@@ -265,7 +265,7 @@ module.exports = (app, db) => { // методы post/get
 		});
 	});
 
-	app.post('/book/delete', (req, res, next) => { // Удаление книги
+	app.post('/books/delete', (req, res, next) => { // Удаление книги
 		if (!isset(req.body.id))
 			return next(new errs.InvalidArgumentError("Not enough body data: mast be (id). All fields must are filled"));
 		if (!ObjectID.isValid(req.body.id))
@@ -291,4 +291,64 @@ module.exports = (app, db) => { // методы post/get
 			next();
 		});
 	});
+
+    app.post('/books/edit', (req, res, next) => { // Изменение книги
+
+        function edit(query, values) {
+            collectionBook.updateOne(query, values, (err) => {
+                if (err)
+                    return next(new errs.BadGatewayError(err.message));
+            });
+        }
+
+        if (!isset(req.body.id))
+            return next(new errs.InvalidArgumentError("Not enough body data: mast be (id). All fields must are filled"));
+        if (!ObjectID.isValid(req.body.id))
+            return next(new errs.InvalidArgumentError("Incorrect id"));
+
+        const book_id = ObjectID(req.body.id);
+
+        let name = isset(req.body.name) ? req.body.name : '';
+        let link = isset(req.body.link) ? req.body.link : '';
+        let description = isset(req.body.description) ? req.body.description : '';
+        let authors = isset(req.body.authors) ? req.body.authors : '';
+
+        let query = {_id: book_id};
+
+        if(isset(req.body.year)){
+            let year =  +req.body.year;
+            if (!isNumeric(year) || !isInteger(year))
+                return next(new errs.InvalidArgumentError("Year mast be numeric and integer"));
+            let values = {$set: {year: year}};
+            edit(query, values);
+        }
+
+        if (name !== '') {
+            let values = {$set: {name: name}};
+            edit(query, values);
+        }
+
+        if (link !== '') {
+            let values = {$set: {link: link}};
+            edit(query, values);
+        }
+
+        if (description !== '') {
+            let values = {$set: {description: description}};
+            edit(query, values);
+        }
+
+        if (authors !== '') {
+            let values = {$set: {authors: authors}};
+            edit(query, values);
+        }
+
+        let resBody = {
+            code: 'Status ok',
+            message: 'The book was edited'
+        };
+
+        res.send(resBody);
+        next();
+    });
 };
