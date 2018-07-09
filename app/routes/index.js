@@ -16,8 +16,12 @@ module.exports = (app, db) => { // методы post/get
 		return (num ^ 0) === num;
 	}
 
+	function myTrim(x) {
+	    return x.replace(/^\s+|\s+$/gm,'');
+	}
+
 	function isEmpty(str) {
-		return (str.trim() == '');
+		return (myTrim(str) == '');
 	}
 
 	function isset() {
