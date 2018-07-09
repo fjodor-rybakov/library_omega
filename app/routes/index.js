@@ -16,12 +16,8 @@ module.exports = (app, db) => { // методы post/get
 		return (num ^ 0) === num;
 	}
 
-	function myTrim(x) {
-	    return x.replace(/^\s+|\s+$/gm,'');
-	}
-
 	function isEmpty(str) {
-		return (myTrim(str) == '');
+		return (!(isNumeric(str) && isInteger(str)) ? str.trim() == '' : str);
 	}
 
 	function isset() {
@@ -49,7 +45,6 @@ module.exports = (app, db) => { // методы post/get
 	app.post('/books', (req, res, next) => { // добавление книги
 		if (!isset(req.body.name, req.body.link, req.body.authors, req.body.description, req.body.year))
 			return next(new errs.InvalidArgumentError("Not enough body data: mast be (name, link, authors, description, year). All fields must are filled"));
-
 
 		let year_book = +req.body.year;
 
