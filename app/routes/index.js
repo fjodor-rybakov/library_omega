@@ -37,11 +37,6 @@ module.exports = (app, db) => { // методы post/get
 		return true;
 	}
 
-	app.get('/', (req, res, next) => {
-		res.send(message);
-		next();
-	});
-
 	app.post('/books', (req, res, next) => { // добавление книги
 		if (!isset(req.body.name, req.body.link, req.body.authors, req.body.description, req.body.year))
 			return next(new errs.InvalidArgumentError("Not enough body data: mast be (name, link, authors, description, year). All fields must are filled"));

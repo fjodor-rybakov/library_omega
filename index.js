@@ -13,6 +13,11 @@ server.use(restify.plugins.acceptParser(server.acceptable));
 server.use(restify.plugins.queryParser());
 server.use(restify.plugins.bodyParser());
 
+server.get('*/', restify.plugins.serveStatic({
+    directory: 'C:/library_omega_site/public',
+    default: 'index.html'
+}));
+
 server.listen(config.port, () => { // Подключаемся к серверу
 	console.log(`Server is listening on port ${config.port}`);
 });
