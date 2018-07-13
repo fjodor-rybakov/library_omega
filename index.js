@@ -6,16 +6,16 @@ const config  = require('./config'),
 
 const server = restify.createServer({
 	name: config.name,
-    version: config.version
+	version: config.version
 });
 
 server.use(restify.plugins.acceptParser(server.acceptable));
 server.use(restify.plugins.queryParser());
 server.use(restify.plugins.bodyParser());
 
-server.get('*/', restify.plugins.serveStatic({
-    directory: 'C:/library_omega_site/public',
-    default: 'index.html'
+server.get('/*', restify.plugins.serveStatic({
+	directory: 'C:/library_omega_site/public', // раположение localhost(адрес)
+	default: 'index.html'
 }));
 
 server.listen(config.port, () => { // Подключаемся к серверу
