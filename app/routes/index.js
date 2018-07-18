@@ -232,7 +232,7 @@ module.exports = (app, db) => { // методы post/get
 
 		let substring = req.query.substring;
 		let query = {
-			"name": {$regex: substring}
+			"name": {$regex: substring, $options:'i'}
 		};
 
 		collectionBook.find(query).toArray((err, result) => {
